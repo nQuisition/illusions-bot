@@ -15,6 +15,13 @@ const execute = (cmd, message, ...args) => {
   if (!command) {
     return Promise.resolve("Unknown command");
   }
+  if (command.toLowerCase === "commands") {
+    return message.reply(
+      Object.keys(allCommands)
+        .sort((a, b) => a.localeCompare(b))
+        .join(", ")
+    );
+  }
   return allCommands[command].handler(message, ...args);
 };
 
