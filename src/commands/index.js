@@ -9,18 +9,18 @@ const allCommands = {
 };
 
 const execute = (cmd, message, ...args) => {
-  const command = Object.keys(allCommands).find(
-    key => key === cmd.toLowerCase()
-  );
-  if (!command) {
-    return Promise.resolve("Unknown command");
-  }
-  if (command.toLowerCase() === "commands") {
+  if (cmd.toLowerCase() === "commands") {
     return message.reply(
       Object.keys(allCommands)
         .sort((a, b) => a.localeCompare(b))
         .join(", ")
     );
+  }
+  const command = Object.keys(allCommands).find(
+    key => key === cmd.toLowerCase()
+  );
+  if (!command) {
+    return Promise.resolve("Unknown command");
   }
   return allCommands[command].handler(message, ...args);
 };

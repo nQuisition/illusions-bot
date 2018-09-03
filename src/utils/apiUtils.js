@@ -31,7 +31,7 @@ const getLeaderboard = (context, limit) =>
   getFromApi(leaderboardHandlers[context], { limit });
 
 const getProgression = (name, realm) =>
-  getFromApi("progression", { name, realm });
+  getFromApi("character/progression", { name, realm });
 
 module.exports = {
   getCharacter,
