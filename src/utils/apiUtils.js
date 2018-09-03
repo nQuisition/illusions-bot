@@ -17,7 +17,7 @@ const getFromApi = (endpoint, params) => {
     .then(res => res.data);
 };
 
-// FIXME uhhhhh
+// FIXME uhhhh
 const getCharacter = (name, realm) =>
   getFromApi("character", { name, realm }).then(res => res.characters[0]);
 
