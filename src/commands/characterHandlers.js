@@ -7,7 +7,12 @@ const logger = require("../utils/logger");
 const { getSpaces } = require("../utils/utils");
 
 // Returns array of fails
-const claimCharacters = (discordId, discordTag, characters) => {
+const claimOrAssignCharacters = (
+  discordId,
+  discordTag,
+  characters,
+  assign = false
+) => {
   const processedCharacters = characters.map(utils.getCharacterNameAndRealm);
   const chars = [];
   const failed = [];
@@ -47,8 +52,13 @@ const claimCharacters = (discordId, discordTag, characters) => {
         )
       )
     )
-    .then(() => dbUtils.claimApiCharacters(discordId, chars))
-    .then(() => failed)
+    .then(() => {
+      if (!assign) {
+        return dbUtils.claimApiCharacters(discordId, chars);
+      }
+      return dbUtils.assignApiCharacters(discordId, chars);
+    })
+    .then(user => ({ user, failed }))
     .catch(err => {
       logger.error(err);
     });
@@ -60,7 +70,40 @@ const claimHandler = (message, ...args) => {
     return Promise.resolve();
   }
   const { author } = message;
-  return claimCharacters(author.id, author.tag, args).then(failed => {
+  return claimOrAssignCharacters(author.id, author.tag, args).then(res => {
+    const { failed } = res;
+    logger.info(`Failed ${failed.length}`);
+    let msg = "Done!";
+    if (failed.length > 0) {
+      msg = `Could not claim the following character(s): ${failed
+        .map(c => c.character)
+        .join(", ")}. please check your spelling!`;
+    }
+    return message.reply(msg);
+  });
+};
+
+const assignHandler = (message, ...args) => {
+  if (!discordUtils.isModerator(message.member)) {
+    return Promise.resolve();
+  }
+  if (args.length <= 1) {
+    logger.info("No user and/or characters specified");
+    return Promise.resolve();
+  }
+  const discordUser = discordUtils.findUserByName(args[0], message.member);
+  if (!discordUser) {
+    logger.info(`Cannot find user with name ${args[0]}`);
+    return message.reply(`User with name or tag ${args[0]} does not exist!`);
+  }
+
+  return claimOrAssignCharacters(
+    discordUser.id,
+    discordUser.tag,
+    args.slice(1),
+    true
+  ).then(res => {
+    const { user, failed } = res;
     logger.info(`Failed ${failed.length}`);
     let msg = "Done!";
     if (failed.length > 0) {
@@ -88,14 +131,14 @@ const showClaimsHandler = (message, ...args) => {
         )
       );
   }
-  const userId = discordUtils.findUserIdByName(userName, message.member);
-  if (!userId) {
+  const user = discordUtils.findUserByName(userName, message.member);
+  if (!user) {
     logger.info(`Cannot find user with name ${userName}`);
     return message.reply(`User with name or tag ${userName} does not exist!`);
   }
 
   return dbUtils
-    .getCharacterClaims(userId)
+    .getCharacterClaims(user.id)
     .then(claims =>
       message.reply(
         `User ${userName} has claimed the following character(s): ${claims
@@ -200,6 +243,7 @@ const inspectCharacter = (message, ...args) => {
 
 module.exports = {
   claimHandler,
+  assignHandler,
   showClaimsHandler,
   showIlvlLeaderboardHandler,
   inspectCharacter

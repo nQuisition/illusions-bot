@@ -13,13 +13,13 @@ const isModerator = member =>
 const isAdmin = member =>
   member.hasPermission(Discord.Permissions.FLAGS.MANAGE_GUILD);
 
-const findUserIdByName = (name, searcher) => {
+const findUserByName = (name, searcher) => {
   const { members } = searcher.guild;
   let match = members.find(member => member.displayName === name);
   if (!match) {
     match = members.find(member => member.user.tag === name);
   }
-  return match && match.id;
+  return match && { ...match, tag: match.user.tag };
 };
 
 const findUserById = id => bot.users.find("id", id);
@@ -66,7 +66,7 @@ module.exports = {
   setBot,
   isModerator,
   isAdmin,
-  findUserIdByName,
+  findUserByName,
   findUserById,
   constructDefaultEmbed,
   constructTable

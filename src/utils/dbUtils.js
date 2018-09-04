@@ -15,7 +15,7 @@ const findOrAddUser = (discordId, discordTag) =>
     if (!user) {
       return addUser(discordId, discordTag);
     }
-    return Promise.resolve();
+    return user;
   });
 
 const createCharacterClaim = (discordId, characterId, date = Date.now()) =>
@@ -35,6 +35,35 @@ const claimApiCharacters = (discordId, apiCharacters) => {
     Promise.resolve()
   );
 };
+
+const assignApiCharacters = (discordId, apiCharacters) =>
+  User.findOne({ _id: discordId }).then(user => {
+    if (!user) {
+      throw new Error("User not found");
+    }
+    const stringIds = user.characters.map(ch => ch._id).map(String);
+    const toAdd = apiCharacters.filter(char => !stringIds.includes(char._id));
+    user.characters.push(
+      ...toAdd.map(char => ({
+        _id: char._id,
+        name: char.name,
+        realm: char.realm
+      }))
+    );
+    logger.info(user.rank || 10);
+    toAdd.forEach(char => {
+      console.log(char.rank);
+    });
+
+    user.rank = Math.min(
+      user.rank || 10,
+      toAdd.reduce((min, char) => (char.rank < min ? char.rank : min), 10)
+    );
+    if (user.rank < 0) {
+      user.rank = 100;
+    }
+    return user.save();
+  });
 
 const getCharacterClaims = discordId => {
   const query = {};
@@ -132,6 +161,7 @@ module.exports = {
   addUser,
   findOrAddUser,
   claimApiCharacters,
+  assignApiCharacters,
   getCharacterClaims,
   createTeam,
   addToTeam,

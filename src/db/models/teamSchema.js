@@ -1,9 +1,5 @@
 const mongoose = require("mongoose");
-
-const characterSchema = mongoose.Schema({
-  name: String,
-  realm: String
-});
+const characterSchema = require("./characterSchema");
 
 const teamSchema = mongoose.Schema({
   name: { type: String, unique: true, index: true },
