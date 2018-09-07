@@ -15,6 +15,7 @@ const isModerator = member =>
 const isAdmin = member =>
   member.hasPermission(Discord.Permissions.FLAGS.MANAGE_GUILD);
 
+// TODO rename this and similar to find*Member*ByName
 const findUserByName = (name, searcherMember) => {
   const { members } = searcherMember.guild;
   let match = members.find(member => member.displayName === name);
@@ -23,6 +24,9 @@ const findUserByName = (name, searcherMember) => {
   }
   return match;
 };
+
+const findMemberById = (id, searcherMember) =>
+  searcherMember.guild.members.find(member => member.id === id);
 
 const assignRoleBasedOnRank = (member, rank) => {
   const relevantRoles = Object.values(rolesMap).reduce((arr, r) => {
@@ -128,6 +132,7 @@ module.exports = {
   isModerator,
   isAdmin,
   findUserByName,
+  findMemberById,
   findUserById,
   getAllUserTags,
   assignRoleBasedOnRank,

@@ -86,6 +86,7 @@ const listTeamHandler = (message, ...args) => {
   if (!args[0] || args[0].length <= 0) {
     return discordUtils.replyAndReject(message, "Please specify the team name");
   }
+  const hideRealm = true;
   let chars;
   return dbUtils
     .listTeam(args[0])
@@ -108,13 +109,14 @@ const listTeamHandler = (message, ...args) => {
         if (!user) {
           return "";
         }
-        return user.discordTag;
+        return discordUtils.findMemberById(user._id, message.member)
+          .displayName;
       };
       const mappedCharacters = chars
         .sort((c1, c2) => c2.ilvl - c1.ilvl)
         .map((char, idx) => ({
           number: idx + 1,
-          name: `${char.name}-${char.realm}`,
+          name: hideRealm ? char.name : `${char.name}-${char.realm}`,
           level: char.level,
           ilvl: `${char.ilvle}/${char.ilvl}`,
           tag: getTag(char)
