@@ -1,0 +1,13 @@
+{
+  "rolesMap": {
+    "0": "High Priestess",
+    "1": "Mr.Impossible",
+    "2": "Archmage",
+    "3": "Elder",
+    "4": "Sorcerer",
+    "5": "Trial Sorcerer",
+    "6": "Trial Sorcerer",
+    "7": "Apprentice"
+  },
+  "modOnly": true
+}

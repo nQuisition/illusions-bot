@@ -3,6 +3,7 @@ const logger = require("./utils/logger");
 const commands = require("./commands/index");
 const discordUtils = require("./utils/discordUtils");
 const scheduler = require("./scheduler");
+const settings = require("./settings.json");
 
 const bot = new Discord.Client();
 bot.on("ready", () => {
@@ -17,7 +18,16 @@ bot.on("error", error => {
 });
 
 bot.on("message", message => {
+  if (message.channel instanceof Discord.DMChannel) {
+    logger.info(
+      `Got DM message from ${message.author.tag}: "${message.content}"`
+    );
+    return;
+  }
   if (message.author.bot || !message.member) {
+    return;
+  }
+  if (settings.modOnly && !discordUtils.isModerator(message.member)) {
     return;
   }
   if (message.content.substring(0, 1) === "!") {

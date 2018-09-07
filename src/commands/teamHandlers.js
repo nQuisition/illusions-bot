@@ -74,14 +74,29 @@ const listTeamHandler = (message, ...args) => {
   if (!args[0] || args[0].length <= 0) {
     return message.reply("Please specify the team name");
   }
+  let chars;
   return dbUtils
     .listTeam(args[0])
-    .then(chars => {
+    .then(characters => {
+      chars = characters;
+      return dbUtils.getAllUsers();
+    })
+    .then(users => {
       const header = {
         number: "#",
         name: "Name",
         level: "Level",
-        ilvl: "ilvle/ilvl"
+        ilvl: "ilvle/ilvl",
+        tag: "User Tag"
+      };
+      const getTag = char => {
+        const user = users.find(u =>
+          u.characters.find(ch => String(ch._id) === String(char._id))
+        );
+        if (!user) {
+          return "";
+        }
+        return user.discordTag;
       };
       const mappedCharacters = chars
         .sort((c1, c2) => c2.ilvl - c1.ilvl)
@@ -89,18 +104,21 @@ const listTeamHandler = (message, ...args) => {
           number: idx + 1,
           name: `${char.name}-${char.realm}`,
           level: char.level,
-          ilvl: `${char.ilvle}/${char.ilvl}`
+          ilvl: `${char.ilvle}/${char.ilvl}`,
+          tag: getTag(char)
         }));
-      const desc = discordUtils.constructTable([header, ...mappedCharacters]);
+      const descs = discordUtils.constructTables([header, ...mappedCharacters]);
       const embed = discordUtils.constructDefaultEmbed();
       embed.setTitle(
         `Team "${args[0]}"                                              `
       );
       embed.setColor(16042818);
-      embed.addField(
-        "ASDASDASDASDASDASDASDADASDASDASDASDASDASDADASDASDADASDA",
-        "```autohotkey\n" + desc + "```"
-      );
+      descs.forEach(desc => {
+        embed.addField(
+          "ASDASDASDASDASDASDASDADASDASDASDASDASDASDADASDASDADASDA",
+          "```autohotkey\n" + desc + "```"
+        );
+      });
       return message.channel.send(embed);
     })
     .catch(err => {

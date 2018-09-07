@@ -1,5 +1,7 @@
 const Discord = require("discord.js");
 const utils = require("./utils");
+const logger = require("./logger");
+const { rolesMap } = require("../settings.json");
 
 // TODO ugly?!
 let bot;
@@ -19,19 +21,57 @@ const findUserByName = (name, searcher) => {
   if (!match) {
     match = members.find(member => member.user.tag === name);
   }
-  return match && { ...match, tag: match.user.tag };
+  return match;
+};
+
+const assignRoleBasedOnRank = (member, rank) => {
+  const relevantRoles = Object.values(rolesMap).reduce((arr, r) => {
+    if (!arr.includes(r)) {
+      arr.push(r);
+    }
+    return arr;
+  }, []);
+  const roleName = rolesMap[rank];
+  const role = member.guild.roles.find(r => r.name === roleName);
+  if (!role) {
+    logger.warn(`Role for rank ${rank} not found!`);
+    return Promise.resolve();
+  }
+  const index = relevantRoles.indexOf(roleName);
+  if (
+    member.roles.find(
+      r =>
+        relevantRoles.includes(r.name) && relevantRoles.indexOf(r.name) <= index
+    )
+  ) {
+    logger.info("Member has an equal/higher role!");
+    return Promise.resolve();
+  }
+  const toRemove = member.roles.filter(
+    r => relevantRoles.includes(r.name) && relevantRoles.indexOf(r.name) > index
+  );
+  return member.addRole(role).then(() => member.removeRoles(toRemove));
 };
 
 const findUserById = id => bot.users.find("id", id);
 
-const constructTable = data => {
+const getAllUserTags = searcher =>
+  searcher.guild.members.map(m => ({
+    id: m.id,
+    name: m.displayName,
+    tag: m.user.tag
+  }));
+
+const constructTable = (data, showHeader = true) => {
   const header = data[0];
   const rows = data.slice(1);
   const keys = Object.keys(header);
   const columns = {};
-  keys.forEach(key => {
-    columns[key] = { data: [header[key]], maxLength: header[key].length };
-  });
+  if (showHeader) {
+    keys.forEach(key => {
+      columns[key] = { data: [header[key]], maxLength: header[key].length };
+    });
+  }
   rows.forEach(row => {
     keys.forEach(key => {
       columns[key].data.push(row[key]);
@@ -54,6 +94,16 @@ const constructTable = data => {
   return res;
 };
 
+const constructTables = (data, chunkSize = 10) => {
+  const header = data[0];
+  const rows = data.slice(1);
+  const groups = [];
+  for (let i = 0; i < rows.length; i += chunkSize) {
+    groups.push([header, ...rows.slice(i, i + chunkSize)]);
+  }
+  return groups.map(gr => constructTable(gr));
+};
+
 const constructDefaultEmbed = (user = bot.user) => {
   const embed = new Discord.RichEmbed();
   embed.setAuthor(user.username, user.avatarURL);
@@ -68,6 +118,8 @@ module.exports = {
   isAdmin,
   findUserByName,
   findUserById,
+  getAllUserTags,
+  assignRoleBasedOnRank,
   constructDefaultEmbed,
-  constructTable
+  constructTables
 };

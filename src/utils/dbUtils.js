@@ -18,6 +18,8 @@ const findOrAddUser = (discordId, discordTag) =>
     return user;
   });
 
+const getAllUsers = () => User.find({}, "", { lean: true });
+
 const createCharacterClaim = (discordId, characterId, date = Date.now()) =>
   new CharacterClaim({
     userId: discordId,
@@ -50,13 +52,9 @@ const assignApiCharacters = (discordId, apiCharacters) =>
         realm: char.realm
       }))
     );
-    logger.info(user.rank || 10);
-    toAdd.forEach(char => {
-      console.log(char.rank);
-    });
 
     user.rank = Math.min(
-      user.rank || 10,
+      user.rank !== undefined ? user.rank : 10,
       toAdd.reduce((min, char) => (char.rank < min ? char.rank : min), 10)
     );
     if (user.rank < 0) {
@@ -160,6 +158,7 @@ const completeTask = id =>
 module.exports = {
   addUser,
   findOrAddUser,
+  getAllUsers,
   claimApiCharacters,
   assignApiCharacters,
   getCharacterClaims,

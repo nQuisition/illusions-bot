@@ -33,9 +33,12 @@ const getLeaderboard = (context, limit) =>
 const getProgression = (name, realm) =>
   getFromApi("character/progression", { name, realm });
 
+const getNamesLike = name => getFromApi("character/like", { name });
+
 module.exports = {
   getCharacter,
   getCharactersById,
   getLeaderboard,
-  getProgression
+  getProgression,
+  getNamesLike
 };

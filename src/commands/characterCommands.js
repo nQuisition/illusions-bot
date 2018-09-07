@@ -9,11 +9,17 @@ const ASSIGN_CHARACTERS_DESCRIPTION = "";
 const SHOW_CLAIMS_COMMAND = "claims";
 const SHOW_CLAIMS_DESCRIPTION = "";
 
+const SHOW_UNREGISTERED_USERS_COMMAND = "users";
+const SHOW_UNREGISTERED_USERS_DESCRIPTION = "";
+
 const SHOW_ILVL_LEADERBOARD_COMMAND = "ilvl";
 const SHOW_ILVL_LEADERBOARD_DESCRIPTION = "";
 
 const INSPECT_CHARACTER_COMMAND = "inspect";
 const INSPECT_CHARACTER_DESCRIPTION = "";
+
+const NAMES_LIKE_COMMAND = "like";
+const NAMES_LIKE_DESCRIPTION = "";
 
 const commands = {
   [CLAIM_CHARACTERS_COMMAND]: {
@@ -28,6 +34,10 @@ const commands = {
     handler: characterHandlers.showClaimsHandler,
     description: SHOW_CLAIMS_DESCRIPTION
   },
+  [SHOW_UNREGISTERED_USERS_COMMAND]: {
+    handler: characterHandlers.showUnregisteredUsers,
+    description: SHOW_UNREGISTERED_USERS_DESCRIPTION
+  },
   [SHOW_ILVL_LEADERBOARD_COMMAND]: {
     handler: characterHandlers.showIlvlLeaderboardHandler,
     description: SHOW_ILVL_LEADERBOARD_DESCRIPTION
@@ -35,6 +45,10 @@ const commands = {
   [INSPECT_CHARACTER_COMMAND]: {
     handler: characterHandlers.inspectCharacter,
     description: INSPECT_CHARACTER_DESCRIPTION
+  },
+  [NAMES_LIKE_COMMAND]: {
+    handler: characterHandlers.getNamesLike,
+    description: NAMES_LIKE_DESCRIPTION
   }
 };
 

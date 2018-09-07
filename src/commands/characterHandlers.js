@@ -99,19 +99,23 @@ const assignHandler = (message, ...args) => {
 
   return claimOrAssignCharacters(
     discordUser.id,
-    discordUser.tag,
+    discordUser.user.tag,
     args.slice(1),
     true
   ).then(res => {
     const { user, failed } = res;
     logger.info(`Failed ${failed.length}`);
-    let msg = "Done!";
-    if (failed.length > 0) {
-      msg = `Could not claim the following character(s): ${failed
-        .map(c => c.character)
-        .join(", ")}. please check your spelling!`;
-    }
-    return message.reply(msg);
+    return discordUtils
+      .assignRoleBasedOnRank(discordUser, user.rank)
+      .then(() => {
+        let msg = "Done!";
+        if (failed.length > 0) {
+          msg = `Could not claim the following character(s): ${failed
+            .map(c => c.character)
+            .join(", ")}. please check your spelling!`;
+        }
+        return message.reply(msg);
+      });
   });
 };
 
@@ -146,6 +150,18 @@ const showClaimsHandler = (message, ...args) => {
           .join(", ")}`
       )
     );
+};
+
+const showUnregisteredUsers = (message, ...args) => {
+  if (!discordUtils.isModerator(message.member)) {
+    return Promise.resolve();
+  }
+  return dbUtils.getAllUsers().then(dbUsers => {
+    const unregistered = discordUtils
+      .getAllUserTags(message.member)
+      .filter(usr => dbUsers.findIndex(dbu => dbu._id === usr.id) < 0);
+    return message.reply(unregistered.map(usr => usr.name).join(", "));
+  });
 };
 
 const showIlvlLeaderboardHandler = (message, ...args) => {
@@ -240,11 +256,27 @@ const inspectCharacter = (message, ...args) => {
       return message.reply("An error has occured!");
     });
 };
+const getNamesLike = (message, ...args) => {
+  if (args.length <= 0 || args[0].length === 0) {
+    return message.reply("Please specify a part of character's name");
+  }
+  return apiUtils
+    .getNamesLike(args[0])
+    .then(res => {
+      return message.reply(res.map(c => c.name).join(", "));
+    })
+    .catch(err => {
+      logger.error(err);
+      return Promise.resolve();
+    });
+};
 
 module.exports = {
   claimHandler,
   assignHandler,
   showClaimsHandler,
+  showUnregisteredUsers,
   showIlvlLeaderboardHandler,
-  inspectCharacter
+  inspectCharacter,
+  getNamesLike
 };
