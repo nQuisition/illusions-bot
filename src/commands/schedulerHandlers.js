@@ -31,7 +31,7 @@ const computeDateFromNow = str => {
 const reminderScheduler = (message, ...args) => {
   const startTime = computeDateFromNow(args[0]);
   if (!startTime) {
-    return message.reply("Incorrect time interval!");
+    return discordUtils.replyAndReject(message, "Incorrect time interval!");
   }
   return scheduler.createTask(
     message.author,

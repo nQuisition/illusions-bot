@@ -5,6 +5,8 @@ const discordUtils = require("./utils/discordUtils");
 const scheduler = require("./scheduler");
 const settings = require("./settings.json");
 
+const Message = require("./db/models/messageSchema");
+
 const bot = new Discord.Client();
 bot.on("ready", () => {
   logger.info("Connected");
@@ -39,7 +41,24 @@ bot.on("message", message => {
     const args = message.content.substring(1).split(" ");
     const cmd = args[0];
 
-    commands.execute(cmd, message, ...args.slice(1));
+    const dbMessage = new Message({
+      author: message.author.id,
+      channel: message.channel.id,
+      message: message.content,
+      postedAt: Date.now()
+    });
+
+    commands
+      .execute(cmd, message, ...args.slice(1))
+      .then(() => {
+        dbMessage.succeeded = true;
+        dbMessage.save();
+      })
+      .catch(err => {
+        dbMessage.succeeded = false;
+        dbMessage.output = err.message || String(err);
+        dbMessage.save();
+      });
   }
 });
 

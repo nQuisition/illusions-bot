@@ -15,8 +15,8 @@ const isModerator = member =>
 const isAdmin = member =>
   member.hasPermission(Discord.Permissions.FLAGS.MANAGE_GUILD);
 
-const findUserByName = (name, searcher) => {
-  const { members } = searcher.guild;
+const findUserByName = (name, searcherMember) => {
+  const { members } = searcherMember.guild;
   let match = members.find(member => member.displayName === name);
   if (!match) {
     match = members.find(member => member.user.tag === name);
@@ -55,8 +55,8 @@ const assignRoleBasedOnRank = (member, rank) => {
 
 const findUserById = id => bot.users.find("id", id);
 
-const getAllUserTags = searcher =>
-  searcher.guild.members.map(m => ({
+const getAllUserTags = searcherMember =>
+  searcherMember.guild.members.map(m => ({
     id: m.id,
     name: m.displayName,
     tag: m.user.tag
@@ -112,6 +112,17 @@ const constructDefaultEmbed = (user = bot.user) => {
   return embed;
 };
 
+const replyAndReject = (message, errorMessage, isError = false) => {
+  if (isError) {
+    logger.error(errorMessage);
+  } else {
+    logger.info(errorMessage);
+  }
+  return message
+    .reply(errorMessage)
+    .then(() => Promise.reject(new Error(errorMessage)));
+};
+
 module.exports = {
   setBot,
   isModerator,
@@ -121,5 +132,6 @@ module.exports = {
   getAllUserTags,
   assignRoleBasedOnRank,
   constructDefaultEmbed,
-  constructTables
+  constructTables,
+  replyAndReject
 };

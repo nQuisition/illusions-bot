@@ -20,7 +20,7 @@ const execute = (cmd, message, ...args) => {
     key => key === cmd.toLowerCase()
   );
   if (!command) {
-    return Promise.resolve("Unknown command");
+    return Promise.reject(new Error("Unknown command"));
   }
   return allCommands[command].handler(message, ...args);
 };

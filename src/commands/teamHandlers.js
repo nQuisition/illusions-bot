@@ -8,10 +8,10 @@ const { getSpaces } = require("../utils/utils");
 
 const createTeamHandler = (message, ...args) => {
   if (!discordUtils.isAdmin(message.member)) {
-    return Promise.resolve();
+    return Promise.reject(new Error("Forbidden"));
   }
   if (!args[0] || args[0].length <= 0) {
-    return message.reply("Please specify the team name");
+    return discordUtils.replyAndReject(message, "Please specify the team name");
   }
   const name = escape(args[0]);
   return dbUtils
@@ -21,20 +21,29 @@ const createTeamHandler = (message, ...args) => {
     })
     .catch(err => {
       if (err.code && err.code === 11000) {
-        return message.reply(`Team "${name}" already exists!`);
+        return discordUtils.replyAndReject(
+          message,
+          `Team "${name}" already exists!`
+        );
       }
-      return message.reply("An error has occured. Please try again");
+      return discordUtils.replyAndReject(
+        message,
+        "An error has occured. Please try again"
+      );
     });
 };
 const addToTeamHandler = (message, ...args) => {
   if (!discordUtils.isAdmin(message.member)) {
-    return Promise.resolve();
+    return Promise.reject(new Error("Forbidden"));
   }
   if (!args[0] || args[0].length <= 0) {
-    return message.reply("Please specify the team name");
+    return discordUtils.replyAndReject(message, "Please specify the team name");
   }
   if (!args[1] || args[1].length <= 0) {
-    return message.reply("Please specify at least one character name");
+    return discordUtils.replyAndReject(
+      message,
+      "Please specify at least one character name"
+    );
   }
   return dbUtils
     .addToTeam(args[0], args.slice(1).map(utils.getCharacterNameAndRealm))
@@ -62,17 +71,20 @@ const addToTeamHandler = (message, ...args) => {
       );
     })
     .catch(err => {
-      logger.error(err);
-      return message.reply(`An error has occured! ${err.message}`);
+      return discordUtils.replyAndReject(
+        message,
+        err.message || String(err),
+        true
+      );
     });
 };
 const removeFromTeamHandler = (message, ...args) => {};
 const listTeamHandler = (message, ...args) => {
   if (!discordUtils.isModerator(message.member)) {
-    return Promise.resolve();
+    return Promise.reject(new Error("Forbidden"));
   }
   if (!args[0] || args[0].length <= 0) {
-    return message.reply("Please specify the team name");
+    return discordUtils.replyAndReject(message, "Please specify the team name");
   }
   let chars;
   return dbUtils
@@ -122,8 +134,11 @@ const listTeamHandler = (message, ...args) => {
       return message.channel.send(embed);
     })
     .catch(err => {
-      logger.error(err);
-      return message.reply(`An error has occured! ${err.message}`);
+      return discordUtils.replyAndReject(
+        message,
+        err.message || String(err),
+        true
+      );
     });
 };
 

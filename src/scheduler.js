@@ -37,7 +37,7 @@ const isReadyToBeScheduled = (task, timeNow = moment()) =>
     moment().add(checkInterval * 2, "ms")
   );
 
-const createTask = (author, name, value, type, startTime, interval = 0) => {
+const createTask = (author, name, value, type, startTime, interval = 0) =>
   dbUtils
     .createTask(author.id, name, value, type, startTime, interval)
     .then(res => {
@@ -47,8 +47,8 @@ const createTask = (author, name, value, type, startTime, interval = 0) => {
       if (isReadyToBeScheduled(res)) {
         schedule(res);
       }
+      return Promise.resolve();
     });
-};
 
 const scheduleTasks = () => {
   const timeNow = moment();

@@ -66,8 +66,7 @@ const claimOrAssignCharacters = (
 
 const claimHandler = (message, ...args) => {
   if (args.length <= 0) {
-    logger.info("No characters specified");
-    return Promise.resolve();
+    return discordUtils.replyAndReject(message, "No characters specified");
   }
   const { author } = message;
   return claimOrAssignCharacters(author.id, author.tag, args).then(res => {
@@ -85,16 +84,20 @@ const claimHandler = (message, ...args) => {
 
 const assignHandler = (message, ...args) => {
   if (!discordUtils.isModerator(message.member)) {
-    return Promise.resolve();
+    return Promise.reject(new Error("Forbidden"));
   }
   if (args.length <= 1) {
-    logger.info("No user and/or characters specified");
-    return Promise.resolve();
+    return discordUtils.replyAndReject(
+      message,
+      "No user and/or characters specified"
+    );
   }
   const discordUser = discordUtils.findUserByName(args[0], message.member);
   if (!discordUser) {
-    logger.info(`Cannot find user with name ${args[0]}`);
-    return message.reply(`User with name or tag ${args[0]} does not exist!`);
+    return discordUtils.replyAndReject(
+      message,
+      `User with name or tag ${args[0]} does not exist!`
+    );
   }
 
   return claimOrAssignCharacters(
@@ -121,7 +124,7 @@ const assignHandler = (message, ...args) => {
 
 const showClaimsHandler = (message, ...args) => {
   if (!discordUtils.isModerator(message.member)) {
-    return Promise.resolve();
+    return Promise.reject(new Error("Forbidden"));
   }
   const userName = args[0];
   if (!userName) {
@@ -137,8 +140,10 @@ const showClaimsHandler = (message, ...args) => {
   }
   const user = discordUtils.findUserByName(userName, message.member);
   if (!user) {
-    logger.info(`Cannot find user with name ${userName}`);
-    return message.reply(`User with name or tag ${userName} does not exist!`);
+    return discordUtils.replyAndReject(
+      message,
+      `User with name or tag ${userName} does not exist!`
+    );
   }
 
   return dbUtils
@@ -154,7 +159,7 @@ const showClaimsHandler = (message, ...args) => {
 
 const showUnregisteredUsers = (message, ...args) => {
   if (!discordUtils.isModerator(message.member)) {
-    return Promise.resolve();
+    return Promise.reject(new Error("Forbidden"));
   }
   return dbUtils.getAllUsers().then(dbUsers => {
     const unregistered = discordUtils
@@ -202,23 +207,23 @@ const getProgressionString = raid => {
 };
 const inspectCharacter = (message, ...args) => {
   if (args.length <= 0) {
-    return message.reply("Please specify a character or armory URL");
+    return discordUtils.replyAndReject(
+      message,
+      "Please specify a character or armory URL"
+    );
   }
   let name;
   let realm;
   if (args[0].startsWith("https://worldofwarcraft.com/")) {
-    const invalidUrl = () => {
-      return message.reply("Invalid URL!");
-    };
     const toSearch = "character/";
     const pos = args[0].indexOf(toSearch);
     if (pos < 0) {
-      return invalidUrl();
+      return discordUtils.replyAndReject(message, "Invalid URL!");
     }
     const str = args[0].substring(pos + toSearch.length);
     const pos2 = str.indexOf("/");
     if (pos2 < 0) {
-      return invalidUrl();
+      return discordUtils.replyAndReject(message, "Invalid URL!");
     }
     realm = str.substring(0, pos2);
     name = str.substring(pos2 + 1);
@@ -251,14 +256,25 @@ const inspectCharacter = (message, ...args) => {
     })
     .catch(err => {
       if (err.response && err.response.status === 404) {
-        return message.reply("Character not found!");
+        return discordUtils.replyAndReject(
+          message,
+          "Character not found!",
+          true
+        );
       }
-      return message.reply("An error has occured!");
+      return discordUtils.replyAndReject(
+        message,
+        "An error has occured!",
+        true
+      );
     });
 };
 const getNamesLike = (message, ...args) => {
   if (args.length <= 0 || args[0].length === 0) {
-    return message.reply("Please specify a part of character's name");
+    return discordUtils.replyAndReject(
+      message,
+      "Please specify a part of character's name"
+    );
   }
   return apiUtils
     .getNamesLike(args[0])
@@ -266,8 +282,11 @@ const getNamesLike = (message, ...args) => {
       return message.reply(res.map(c => c.name).join(", "));
     })
     .catch(err => {
-      logger.error(err);
-      return Promise.resolve();
+      return discordUtils.replyAndReject(
+        message,
+        err.message || String(err),
+        true
+      );
     });
 };
 
