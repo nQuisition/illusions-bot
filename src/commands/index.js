@@ -22,17 +22,33 @@ const permissionCheckers = {
   admin: discordUtils.isAdmin
 };
 
+const getAccessibleSubset = (cat, member) => {
+  const { commands, ...restOfCat } = cat;
+  const cmds = Object.keys(commands).reduce((obj, c) => {
+    const cmd = commands[c];
+    if (!cmd.level || permissionCheckers[cmd.level](member)) {
+      obj[c] = cmd;
+    }
+    return obj;
+  }, {});
+  restOfCat.commands = cmds;
+  return restOfCat;
+};
+
 const execute = (cmd, message, ...args) => {
   if (cmd.toLowerCase() === "commands") {
     const embed = discordUtils.constructDefaultEmbed();
-    allCategories.forEach(cat => {
-      embed.addField(
-        cat.name,
-        Object.keys(cat.commands)
-          .sort((a, b) => a.localeCompare(b))
-          .join(", ")
-      );
-    });
+    allCategories
+      .map(cat => getAccessibleSubset(cat, message.member))
+      .filter(cat => Object.keys(cat.commands).length > 0)
+      .forEach(cat => {
+        embed.addField(
+          cat.name,
+          Object.keys(cat.commands)
+            .sort((a, b) => a.localeCompare(b))
+            .join(", ")
+        );
+      });
     return message.reply(embed);
   }
   const command = Object.keys(allCommands).find(
