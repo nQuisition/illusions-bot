@@ -39,7 +39,8 @@ const rootHandler = (message, ...args) => {
 const commands = {
   [ROOT_TEAM_COMMAND]: {
     handler: rootHandler,
-    description: ROOT_TEAM_DESCRIPTION
+    description: ROOT_TEAM_DESCRIPTION,
+    level: "moderator"
   }
 };
 

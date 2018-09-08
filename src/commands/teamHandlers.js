@@ -7,9 +7,6 @@ const logger = require("../utils/logger");
 const { getSpaces } = require("../utils/utils");
 
 const createTeamHandler = (message, ...args) => {
-  if (!discordUtils.isAdmin(message.member)) {
-    return Promise.reject(new Error("Forbidden"));
-  }
   if (!args[0] || args[0].length <= 0) {
     return discordUtils.replyAndReject(message, "Please specify the team name");
   }
@@ -33,9 +30,6 @@ const createTeamHandler = (message, ...args) => {
     });
 };
 const addToTeamHandler = (message, ...args) => {
-  if (!discordUtils.isAdmin(message.member)) {
-    return Promise.reject(new Error("Forbidden"));
-  }
   if (!args[0] || args[0].length <= 0) {
     return discordUtils.replyAndReject(message, "Please specify the team name");
   }
@@ -80,9 +74,6 @@ const addToTeamHandler = (message, ...args) => {
 };
 const removeFromTeamHandler = (message, ...args) => {};
 const listTeamHandler = (message, ...args) => {
-  if (!discordUtils.isModerator(message.member)) {
-    return Promise.reject(new Error("Forbidden"));
-  }
   if (!args[0] || args[0].length <= 0) {
     return discordUtils.replyAndReject(message, "Please specify the team name");
   }

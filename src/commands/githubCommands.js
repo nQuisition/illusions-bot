@@ -23,7 +23,8 @@ const commands = {
   },
   [SUBMIT_TODO_COMMAND]: {
     handler: githubHandlers.todoHandler,
-    description: SUBMIT_TODO_DESCRIPTION
+    description: SUBMIT_TODO_DESCRIPTION,
+    level: "admin"
   }
 };
 

@@ -5,7 +5,7 @@ const issueHandler = (type, message, ...args) => {
   if (args.length <= 0 || args[0].trim().length <= 0) {
     return discordUtils.replyAndReject(
       message,
-      "Please provide description for the issue"
+      "Please provide description for the issue/suggestion"
     );
   }
   const author = message.author.tag;
@@ -30,7 +30,7 @@ const todoHandler = (message, ...args) => {
     if (args.length <= 1 || args[1].trim().length <= 0) {
       return discordUtils.replyAndReject(
         message,
-        "Please provide description for the issue"
+        "Please provide description for the issue/sugestion"
       );
     }
     return githubUtils

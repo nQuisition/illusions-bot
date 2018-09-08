@@ -83,9 +83,6 @@ const claimHandler = (message, ...args) => {
 };
 
 const assignHandler = (message, ...args) => {
-  if (!discordUtils.isModerator(message.member)) {
-    return Promise.reject(new Error("Forbidden"));
-  }
   if (args.length <= 1) {
     return discordUtils.replyAndReject(
       message,
@@ -123,9 +120,6 @@ const assignHandler = (message, ...args) => {
 };
 
 const showClaimsHandler = (message, ...args) => {
-  if (!discordUtils.isModerator(message.member)) {
-    return Promise.reject(new Error("Forbidden"));
-  }
   const userName = args[0];
   if (!userName) {
     return dbUtils
@@ -158,9 +152,6 @@ const showClaimsHandler = (message, ...args) => {
 };
 
 const showUnregisteredUsers = (message, ...args) => {
-  if (!discordUtils.isModerator(message.member)) {
-    return Promise.reject(new Error("Forbidden"));
-  }
   return dbUtils.getAllUsers().then(dbUsers => {
     const unregistered = discordUtils
       .getAllUserTags(message.member)

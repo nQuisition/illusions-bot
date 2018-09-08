@@ -17,6 +17,11 @@ const allCommands = allCategories.reduce(
   {}
 );
 
+const permissionCheckers = {
+  moderator: discordUtils.isModerator,
+  admin: discordUtils.isAdmin
+};
+
 const execute = (cmd, message, ...args) => {
   if (cmd.toLowerCase() === "commands") {
     const embed = discordUtils.constructDefaultEmbed();
@@ -35,6 +40,13 @@ const execute = (cmd, message, ...args) => {
   );
   if (!command) {
     return Promise.reject(new Error("Unknown command"));
+  }
+  const commandObject = allCommands[command];
+  if (
+    commandObject.level &&
+    !permissionCheckers[commandObject.level](message.member)
+  ) {
+    return Promise.reject(new Error("Forbidden"));
   }
   return allCommands[command].handler(message, ...args);
 };

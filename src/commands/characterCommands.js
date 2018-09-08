@@ -31,15 +31,18 @@ const commands = {
   },
   [ASSIGN_CHARACTERS_COMMAND]: {
     handler: characterHandlers.assignHandler,
-    description: ASSIGN_CHARACTERS_DESCRIPTION
+    description: ASSIGN_CHARACTERS_DESCRIPTION,
+    level: "moderator"
   },
   [SHOW_CLAIMS_COMMAND]: {
     handler: characterHandlers.showClaimsHandler,
-    description: SHOW_CLAIMS_DESCRIPTION
+    description: SHOW_CLAIMS_DESCRIPTION,
+    level: "moderator"
   },
   [SHOW_UNREGISTERED_USERS_COMMAND]: {
     handler: characterHandlers.showUnregisteredUsers,
-    description: SHOW_UNREGISTERED_USERS_DESCRIPTION
+    description: SHOW_UNREGISTERED_USERS_DESCRIPTION,
+    level: "moderator"
   },
   [SHOW_ILVL_LEADERBOARD_COMMAND]: {
     handler: characterHandlers.showIlvlLeaderboardHandler,
