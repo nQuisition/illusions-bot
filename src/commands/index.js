@@ -1,11 +1,13 @@
 const characterCommands = require("./characterCommands");
 const teamCommands = require("./teamCommands");
 const schedulerCommands = require("./schedulerCommands");
+const githubCommands = require("./githubCommands");
 
 const allCommands = {
   ...characterCommands,
   ...teamCommands,
-  ...schedulerCommands
+  ...schedulerCommands,
+  ...githubCommands
 };
 
 const execute = (cmd, message, ...args) => {
