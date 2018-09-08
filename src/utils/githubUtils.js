@@ -13,7 +13,11 @@ const createIssue = (author, message, type) => {
     config.githubAccessToken
   }`;
   const labelsInfo = labelsMap[type];
-  const body = `**Submitted by**\n${author}\n\n**Content**\n${message}`;
+  let msg = message;
+  if (message.indexOf("|") > 0) {
+    msg = `- [ ] ${message.replace(/\|/g, "\n- [ ]")}`;
+  }
+  const body = `**Submitted by**\n${author}\n\n**Content**\n${msg}`;
   const title = labelsInfo
     ? `${labelsInfo.titleText} ${author}`
     : `Issue submitted by ${author}`;
