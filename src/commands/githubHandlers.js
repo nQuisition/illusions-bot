@@ -19,8 +19,21 @@ const issueHandler = (type, message, ...args) => {
 const bugHandler = (message, ...args) => issueHandler("bug", message, ...args);
 const suggestHandler = (message, ...args) =>
   issueHandler("suggest", message, ...args);
-const todoHandler = (message, ...args) =>
-  issueHandler("todo", message, ...args);
+const todoHandler = (message, ...args) => {
+  if (args[0].toLowerCase() === "-append") {
+    return githubUtils
+      .appendLastTodo(args.slice(1).join(" "))
+      .then(res =>
+        message.reply(
+          `Issue successfully updated at ${res.data && res.data.html_url}`
+        )
+      )
+      .catch(err =>
+        discordUtils.replyAndReject(message, err.message || String(err), true)
+      );
+  }
+  return issueHandler("todo", message, ...args);
+};
 
 module.exports = {
   bugHandler,

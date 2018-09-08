@@ -28,6 +28,32 @@ const createIssue = (author, message, type) => {
   return axios.post(url, issue);
 };
 
+const getLastTodo = () => {
+  const url = `${githubApiUrl}repos/${config.githubRepo}/issues?labels=todo`;
+  return axios.get(url).then(res => res.data[0]);
+};
+
+const editIssueBody = (number, newBody) => {
+  const url = `${githubApiUrl}repos/${
+    config.githubRepo
+  }/issues/${number}?access_token=${config.githubAccessToken}`;
+  return axios.patch(url, { body: newBody });
+};
+
+const appendLastTodo = message => {
+  let msg = message;
+  if (message.indexOf("|") > 0) {
+    msg = `- [ ] ${message.replace(/\|/g, "\n- [ ]")}`;
+  }
+  return getLastTodo().then(todo => {
+    if (!todo) {
+      throw new Error("There is no TODO to append!");
+    }
+    return editIssueBody(todo.number, `${todo.body}\n${msg}`);
+  });
+};
+
 module.exports = {
-  createIssue
+  createIssue,
+  appendLastTodo
 };
