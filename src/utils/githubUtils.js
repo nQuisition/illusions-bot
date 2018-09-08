@@ -8,6 +8,13 @@ const labelsMap = {
   todo: { labels: ["todo"], titleText: "TODO by" }
 };
 
+const insertCheckboxes = message =>
+  message
+    .split(/\|/g)
+    .map(s => s.trim())
+    .filter(s => s && s.length > 0)
+    .join("\n- [ ] ");
+
 const createIssue = (author, message, type) => {
   const url = `${githubApiUrl}repos/${config.githubRepo}/issues?access_token=${
     config.githubAccessToken
@@ -15,7 +22,7 @@ const createIssue = (author, message, type) => {
   const labelsInfo = labelsMap[type];
   let msg = message;
   if (message.indexOf("|") > 0) {
-    msg = `- [ ] ${message.replace(/\|/g, "\n- [ ]")}`;
+    msg = `- [ ] ${insertCheckboxes(message)}`;
   }
   const body = `**Submitted by**\n${author}\n\n**Content**\n${msg}`;
   const title = labelsInfo
@@ -43,7 +50,7 @@ const editIssueBody = (number, newBody) => {
 const appendLastTodo = message => {
   let msg = message;
   if (message.indexOf("|") > 0) {
-    msg = `- [ ] ${message.replace(/\|/g, "\n- [ ]")}`;
+    msg = `- [ ] ${insertCheckboxes(message)}`;
   }
   return getLastTodo().then(todo => {
     if (!todo) {

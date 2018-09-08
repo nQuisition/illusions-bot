@@ -1,5 +1,8 @@
 const githubHandlers = require("./githubHandlers");
 
+const CATEGORY_NAME = "GitHub";
+const CATEGORY_DESCRIPTION = "";
+
 const SUBMIT_BUG_COMMAND = "bug";
 const SUBMIT_BUG_DESCRIPTION = "";
 
@@ -24,4 +27,8 @@ const commands = {
   }
 };
 
-module.exports = commands;
+module.exports = {
+  name: CATEGORY_NAME,
+  description: CATEGORY_DESCRIPTION,
+  commands
+};

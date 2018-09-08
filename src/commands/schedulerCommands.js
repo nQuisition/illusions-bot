@@ -1,5 +1,8 @@
 const schedulerHandlers = require("./schedulerHandlers");
 
+const CATEGORY_NAME = "Scheduler and Reminder";
+const CATEGORY_DESCRIPTION = "";
+
 const REMIND_COMMAND = "remind";
 const REMIND_DESCRIPTION = "";
 
@@ -10,4 +13,8 @@ const commands = {
   }
 };
 
-module.exports = commands;
+module.exports = {
+  name: CATEGORY_NAME,
+  description: CATEGORY_DESCRIPTION,
+  commands
+};

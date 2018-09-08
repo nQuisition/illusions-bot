@@ -1,5 +1,8 @@
 const characterHandlers = require("./characterHandlers");
 
+const CATEGORY_NAME = "Characters";
+const CATEGORY_DESCRIPTION = "";
+
 const CLAIM_CHARACTERS_COMMAND = "claim";
 const CLAIM_CHARACTER_DESCRIPTION = "";
 
@@ -52,4 +55,8 @@ const commands = {
   }
 };
 
-module.exports = commands;
+module.exports = {
+  name: CATEGORY_NAME,
+  description: CATEGORY_DESCRIPTION,
+  commands
+};

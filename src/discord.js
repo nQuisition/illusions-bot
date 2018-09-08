@@ -38,7 +38,10 @@ bot.on("message", message => {
         message.author.tag
       }" in channel "${message.channel.name}"`
     );
-    const args = message.content.substring(1).split(" ");
+    const args = message.content
+      .substring(1)
+      .split(" ")
+      .filter(arg => arg && arg.length > 0);
     const cmd = args[0];
 
     const dbMessage = new Message({

@@ -1,5 +1,8 @@
 const teamHandlers = require("./teamHandlers");
 
+const CATEGORY_NAME = "Teams";
+const CATEGORY_DESCRIPTION = "";
+
 const ROOT_TEAM_COMMAND = "team";
 const ROOT_TEAM_DESCRIPTION = "";
 
@@ -40,4 +43,8 @@ const commands = {
   }
 };
 
-module.exports = commands;
+module.exports = {
+  name: CATEGORY_NAME,
+  description: CATEGORY_DESCRIPTION,
+  commands
+};
