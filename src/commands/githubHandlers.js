@@ -8,6 +8,24 @@ const issueHandler = (type, message, ...args) => {
       "Please provide description for the issue/suggestion"
     );
   }
+  if (args[0].trim().toLowerCase() === "-list") {
+    return githubUtils
+      .getAllIssuesOfType(type)
+      .then(res =>
+        message.reply(
+          res
+            .map(
+              issue =>
+                `#${issue.number} - ${issue.milestone &&
+                  issue.milestone.title} - ${issue.title}`
+            )
+            .join("\n")
+        )
+      )
+      .catch(err =>
+        discordUtils.replyAndReject(message, err.message || String(err), true)
+      );
+  }
   const author = message.author.tag;
   const msg = args.join(" ");
   return githubUtils

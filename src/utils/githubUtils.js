@@ -35,16 +35,44 @@ const createIssue = (author, message, type) => {
   return axios.post(url, issue);
 };
 
-const getLastTodo = () => {
-  const url = `${githubApiUrl}repos/${config.githubRepo}/issues?labels=todo`;
-  return axios.get(url).then(res => res.data[0]);
+const getAllIssuesOfType = (type, onlyOpen = true) => {
+  let url = `${githubApiUrl}repos/${config.githubRepo}/issues`;
+  const params = [];
+  if (type && labelsMap[type]) {
+    params.push(`labels=${labelsMap[type].labels.join(",")}`);
+  }
+  if (!onlyOpen) {
+    params.push("state=all");
+  }
+  url += `${params.length > 0 ? "?" : ""}${params.join("&")}`;
+  return axios.get(url).then(res => res.data);
 };
+
+const getLastTodo = () => getAllIssuesOfType("todo").then(res => res[0]);
+
+const getIssue = number =>
+  getAllIssuesOfType().then(res =>
+    res.find(iss => iss.number === Number(number))
+  );
 
 const editIssueBody = (number, newBody) => {
   const url = `${githubApiUrl}repos/${
     config.githubRepo
   }/issues/${number}?access_token=${config.githubAccessToken}`;
   return axios.patch(url, { body: newBody });
+};
+
+const appendIssue = (number, message) => {
+  let msg = message;
+  if (message.indexOf("|") > 0) {
+    msg = `- [ ] ${insertCheckboxes(message)}`;
+  }
+  return getIssue(number).then(issue => {
+    if (!issue) {
+      throw new Error(`Issue #${number} not found!`);
+    }
+    return editIssueBody(number, `${issue.body}\n${msg}`);
+  });
 };
 
 const appendLastTodo = message => {
@@ -62,5 +90,7 @@ const appendLastTodo = message => {
 
 module.exports = {
   createIssue,
+  getAllIssuesOfType,
+  appendIssue,
   appendLastTodo
 };
