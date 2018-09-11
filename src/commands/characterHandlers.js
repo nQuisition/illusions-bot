@@ -205,7 +205,10 @@ const inspectCharacter = (message, ...args) => {
   }
   let name;
   let realm;
-  if (args[0].startsWith("https://worldofwarcraft.com/")) {
+  if (
+    args[0].startsWith("https://worldofwarcraft.com/") ||
+    args[0].startsWith("http://eu.battle.net/wow/")
+  ) {
     const toSearch = "character/";
     const pos = args[0].indexOf(toSearch);
     if (pos < 0) {
@@ -218,6 +221,9 @@ const inspectCharacter = (message, ...args) => {
     }
     realm = str.substring(0, pos2);
     name = str.substring(pos2 + 1);
+    if (name.indexOf("/") >= 0) {
+      name = name.substring(0, name.indexOf("/"));
+    }
   } else {
     const dashPos = args[0].indexOf("-");
     name = args[0];
