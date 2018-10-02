@@ -4,12 +4,14 @@ const characterCommands = require("./characterCommands");
 const teamCommands = require("./teamCommands");
 const schedulerCommands = require("./schedulerCommands");
 const githubCommands = require("./githubCommands");
+const utilityCommands = require("./utilityCommands");
 
 const allCategories = [
   characterCommands,
   teamCommands,
   schedulerCommands,
-  githubCommands
+  githubCommands,
+  utilityCommands
 ];
 
 const allCommands = allCategories.reduce(
