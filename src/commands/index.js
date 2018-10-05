@@ -48,9 +48,9 @@ const getAccessibleSubset = (cat, member) => {
 };
 
 // Only considering flag before the first non-flag, ie before word without a dash
-const separateArgsIntoFlagsAndParams = (...args) => {
+const separateArgsIntoFlagsAndParams = args => {
   const flags = [];
-  let params;
+  let params = [];
   for (let i = 0; i < args.length; i += 1) {
     if (args[i].startsWith("-")) {
       flags.push(args[i]);
@@ -117,7 +117,7 @@ const execute = (cmd, message, ...args) => {
   }
 
   const { flags, params } = separateArgsIntoFlagsAndParams(processedArgs);
-  return allCommands[command].handler(message, flags, ...params);
+  return commandObject.handler(message, flags, ...params);
 };
 
 module.exports = { execute };
