@@ -52,8 +52,8 @@ const separateArgsIntoFlagsAndParams = args => {
   const flags = [];
   let params = [];
   for (let i = 0; i < args.length; i += 1) {
-    if (args[i].startsWith("-")) {
-      flags.push(args[i]);
+    if (args[i].startsWith("-") && args[i].length > 1) {
+      flags.push(args[i].toLowerCase());
     } else {
       // no more flags!
       params = args.slice(i);

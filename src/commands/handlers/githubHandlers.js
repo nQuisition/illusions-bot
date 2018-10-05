@@ -1,14 +1,9 @@
 const githubUtils = require("../../utils/githubUtils");
 const discordUtils = require("../../utils/discordUtils");
 
-const issueHandler = (type, message, ...args) => {
-  if (args.length <= 0 || args[0].trim().length <= 0) {
-    return discordUtils.replyAndReject(
-      message,
-      "Please provide description for the issue/suggestion"
-    );
-  }
-  if (args[0].trim().toLowerCase() === "-list") {
+const issueHandler = (type, message, flags, ...args) => {
+  // TODO move this to separate subcommand?
+  if (flags.includes("-l") || flags.includes("--list")) {
     return githubUtils
       .getAllIssuesOfType(type)
       .then(res =>
@@ -26,6 +21,12 @@ const issueHandler = (type, message, ...args) => {
         discordUtils.replyAndReject(message, err.message || String(err), true)
       );
   }
+  if (args.length <= 0 || args[0].trim().length <= 0) {
+    return discordUtils.replyAndReject(
+      message,
+      "Please provide description for the issue/suggestion"
+    );
+  }
   const author = message.author.tag;
   const msg = args.join(" ");
   return githubUtils
@@ -41,12 +42,12 @@ const issueHandler = (type, message, ...args) => {
 };
 
 const bugHandler = (message, flags, ...args) =>
-  issueHandler("bug", message, ...args);
+  issueHandler("bug", message, flags, ...args);
 const suggestHandler = (message, flags, ...args) =>
-  issueHandler("suggest", message, ...args);
+  issueHandler("suggest", message, flags, ...args);
 const todoHandler = (message, flags, ...args) => {
-  if (args[0] && args[0].toLowerCase() === "-append") {
-    if (args.length <= 1 || args[1].trim().length <= 0) {
+  if (flags.includes("-a") || flags.includes("--append")) {
+    if (args.length <= 0 || args[0].trim().length <= 0) {
       return discordUtils.replyAndReject(
         message,
         "Please provide description for the issue/sugestion"
@@ -63,7 +64,7 @@ const todoHandler = (message, flags, ...args) => {
         discordUtils.replyAndReject(message, err.message || String(err), true)
       );
   }
-  return issueHandler("todo", message, ...args);
+  return issueHandler("todo", message, flags, ...args);
 };
 
 module.exports = {
