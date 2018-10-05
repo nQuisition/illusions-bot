@@ -1,4 +1,4 @@
-const utilityHandlers = require("./utilityHandlers");
+const utilityHandlers = require("./handlers/utilityHandlers");
 
 const CATEGORY_NAME = "Utility";
 const CATEGORY_DESCRIPTION = "";

@@ -1,4 +1,4 @@
-const teamHandlers = require("./teamHandlers");
+const teamHandlers = require("./handlers/teamHandlers");
 
 const CATEGORY_NAME = "Teams";
 const CATEGORY_DESCRIPTION = "";
@@ -15,32 +15,26 @@ const ADD_TO_TEAM_DESCRIPTION = "";
 const LIST_TEAM_COMMAND = "list";
 const LIST_TEAM_DESCRIPTION = "";
 
-const rootHandler = (message, ...args) => {
-  const subcommand = args[0];
-  if (!subcommand || subcommand.length <= 0) {
-    return Promise.resolve();
-  }
-  switch (subcommand.toLowerCase()) {
-    case CREATE_TEAM_COMMAND: {
-      return teamHandlers.createTeamHandler(message, ...args.slice(1));
-    }
-    case ADD_TO_TEAM_COMMAND: {
-      return teamHandlers.addToTeamHandler(message, ...args.slice(1));
-    }
-    case LIST_TEAM_COMMAND: {
-      return teamHandlers.listTeamHandler(message, ...args.slice(1));
-    }
-    default: {
-      return Promise.resolve();
-    }
+const rootTeamSubcommands = {
+  [CREATE_TEAM_COMMAND]: {
+    handler: teamHandlers.createTeamHandler,
+    description: CREATE_TEAM_DESCRIPTION
+  },
+  [ADD_TO_TEAM_COMMAND]: {
+    handler: teamHandlers.addToTeamHandler,
+    description: ADD_TO_TEAM_DESCRIPTION
+  },
+  [LIST_TEAM_COMMAND]: {
+    handler: teamHandlers.listTeamHandler,
+    description: LIST_TEAM_DESCRIPTION
   }
 };
 
 const commands = {
   [ROOT_TEAM_COMMAND]: {
-    handler: rootHandler,
     description: ROOT_TEAM_DESCRIPTION,
-    level: "moderator"
+    level: "moderator",
+    subcommands: rootTeamSubcommands
   }
 };
 

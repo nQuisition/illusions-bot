@@ -1,12 +1,12 @@
-const config = require("../config");
-const utils = require("../utils/utils");
-const dbUtils = require("../utils/dbUtils");
-const apiUtils = require("../utils/apiUtils");
-const discordUtils = require("../utils/discordUtils");
-const logger = require("../utils/logger");
-const { getSpaces } = require("../utils/utils");
+const config = require("../../config");
+const utils = require("../../utils/utils");
+const dbUtils = require("../../utils/dbUtils");
+const apiUtils = require("../../utils/apiUtils");
+const discordUtils = require("../../utils/discordUtils");
+const logger = require("../../utils/logger");
+const { getSpaces } = require("../../utils/utils");
 
-const createTeamHandler = (message, ...args) => {
+const createTeamHandler = (message, flags, ...args) => {
   if (!args[0] || args[0].length <= 0) {
     return discordUtils.replyAndReject(message, "Please specify the team name");
   }
@@ -29,7 +29,7 @@ const createTeamHandler = (message, ...args) => {
       );
     });
 };
-const addToTeamHandler = (message, ...args) => {
+const addToTeamHandler = (message, flags, ...args) => {
   if (!args[0] || args[0].length <= 0) {
     return discordUtils.replyAndReject(message, "Please specify the team name");
   }
@@ -72,8 +72,8 @@ const addToTeamHandler = (message, ...args) => {
       );
     });
 };
-const removeFromTeamHandler = (message, ...args) => {};
-const listTeamHandler = (message, ...args) => {
+const removeFromTeamHandler = (message, flags, ...args) => {};
+const listTeamHandler = (message, flags, ...args) => {
   if (!args[0] || args[0].length <= 0) {
     return discordUtils.replyAndReject(message, "Please specify the team name");
   }

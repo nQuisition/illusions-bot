@@ -1,10 +1,10 @@
-const config = require("../config");
-const utils = require("../utils/utils");
-const dbUtils = require("../utils/dbUtils");
-const apiUtils = require("../utils/apiUtils");
-const discordUtils = require("../utils/discordUtils");
-const logger = require("../utils/logger");
-const { getSpaces } = require("../utils/utils");
+const config = require("../../config");
+const utils = require("../../utils/utils");
+const dbUtils = require("../../utils/dbUtils");
+const apiUtils = require("../../utils/apiUtils");
+const discordUtils = require("../../utils/discordUtils");
+const logger = require("../../utils/logger");
+const { getSpaces } = require("../../utils/utils");
 
 // Returns array of fails
 const claimOrAssignCharacters = (
@@ -64,7 +64,7 @@ const claimOrAssignCharacters = (
     });
 };
 
-const claimHandler = (message, ...args) => {
+const claimHandler = (message, flags, ...args) => {
   if (args.length <= 0) {
     return discordUtils.replyAndReject(message, "No characters specified");
   }
@@ -82,7 +82,7 @@ const claimHandler = (message, ...args) => {
   });
 };
 
-const assignHandler = (message, ...args) => {
+const assignHandler = (message, flags, ...args) => {
   if (args.length <= 1) {
     return discordUtils.replyAndReject(
       message,
@@ -119,7 +119,7 @@ const assignHandler = (message, ...args) => {
   });
 };
 
-const showClaimsHandler = (message, ...args) => {
+const showClaimsHandler = (message, flags, ...args) => {
   const userName = args[0];
   if (!userName) {
     return dbUtils
@@ -151,7 +151,7 @@ const showClaimsHandler = (message, ...args) => {
     );
 };
 
-const showUnregisteredUsers = (message, ...args) => {
+const showUnregisteredUsers = (message, flags, ...args) => {
   return dbUtils.getAllUsers().then(dbUsers => {
     const unregistered = discordUtils
       .getAllUserTags(message.member)
@@ -160,7 +160,7 @@ const showUnregisteredUsers = (message, ...args) => {
   });
 };
 
-const showIlvlLeaderboardHandler = (message, ...args) => {
+const showIlvlLeaderboardHandler = (message, flags, ...args) => {
   // FIXME validate that it is a number!
   const limit = args[0] || 10;
   return apiUtils.getLeaderboard("ilvl", limit).then(chars => {
@@ -196,7 +196,7 @@ const getProgressionString = raid => {
   }M\`\`\``;
   return res;
 };
-const inspectCharacter = (message, ...args) => {
+const inspectCharacter = (message, flags, ...args) => {
   if (args.length <= 0) {
     return discordUtils.replyAndReject(
       message,
@@ -266,7 +266,7 @@ const inspectCharacter = (message, ...args) => {
       );
     });
 };
-const getNamesLike = (message, ...args) => {
+const getNamesLike = (message, flags, ...args) => {
   if (args.length <= 0 || args[0].length === 0) {
     return discordUtils.replyAndReject(
       message,

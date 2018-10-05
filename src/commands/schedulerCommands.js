@@ -1,4 +1,4 @@
-const schedulerHandlers = require("./schedulerHandlers");
+const schedulerHandlers = require("./handlers/schedulerHandlers");
 
 const CATEGORY_NAME = "Scheduler and Reminder";
 const CATEGORY_DESCRIPTION = "";

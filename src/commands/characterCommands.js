@@ -1,4 +1,4 @@
-const characterHandlers = require("./characterHandlers");
+const characterHandlers = require("./handlers/characterHandlers");
 
 const CATEGORY_NAME = "Characters";
 const CATEGORY_DESCRIPTION = "";

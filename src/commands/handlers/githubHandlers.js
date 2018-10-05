@@ -1,5 +1,5 @@
-const githubUtils = require("../utils/githubUtils");
-const discordUtils = require("../utils/discordUtils");
+const githubUtils = require("../../utils/githubUtils");
+const discordUtils = require("../../utils/discordUtils");
 
 const issueHandler = (type, message, ...args) => {
   if (args.length <= 0 || args[0].trim().length <= 0) {
@@ -40,10 +40,11 @@ const issueHandler = (type, message, ...args) => {
     );
 };
 
-const bugHandler = (message, ...args) => issueHandler("bug", message, ...args);
-const suggestHandler = (message, ...args) =>
+const bugHandler = (message, flags, ...args) =>
+  issueHandler("bug", message, ...args);
+const suggestHandler = (message, flags, ...args) =>
   issueHandler("suggest", message, ...args);
-const todoHandler = (message, ...args) => {
+const todoHandler = (message, flags, ...args) => {
   if (args[0] && args[0].toLowerCase() === "-append") {
     if (args.length <= 1 || args[1].trim().length <= 0) {
       return discordUtils.replyAndReject(

@@ -12,19 +12,19 @@ const diactrics = {
   y: "ýỳÿŷẏỵȳỹ"
 };
 
-const showDiactricLettersHandler = (message, ...args) => {
+const showDiactricLettersHandler = (message, flags, ...args) => {
   if (args.length <= 0 || args[0].trim().length <= 0) {
     const letters = Object.keys(diactrics)
       .map(letter => `**${letter.toUpperCase()}: ${diactrics[letter]}**`)
       .join("\n");
-    return message.reply(`Letters with diactrics: \n ${letters}`);
+    return message.reply(`Letters with diactrics: \n${letters}`);
   }
   const requestLetters = args[0].toLowerCase().split("");
   const letters = Object.keys(diactrics)
     .filter(letter => requestLetters.includes(letter))
     .map(letter => `**${letter.toUpperCase()}: ${diactrics[letter]}**`)
     .join("\n");
-  return message.reply(`Letters with diactrics: \n ${letters}`);
+  return message.reply(`Letters with diactrics: \n${letters}`);
 };
 
 module.exports = {

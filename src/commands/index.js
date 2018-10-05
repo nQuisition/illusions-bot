@@ -29,12 +29,38 @@ const getAccessibleSubset = (cat, member) => {
   const cmds = Object.keys(commands).reduce((obj, c) => {
     const cmd = commands[c];
     if (!cmd.level || permissionCheckers[cmd.level](member)) {
-      obj[c] = cmd;
+      if (cmd.handler) {
+        obj[c] = cmd; // eslint-disable-line no-param-reassign
+      }
+      if (cmd.subcommands) {
+        Object.keys(cmd.subcommands).forEach(subcmdName => {
+          const subcmd = cmd.subcommands[subcmdName];
+          if (!subcmd.level || permissionCheckers[subcmd.level](member)) {
+            obj[`${c} ${subcmdName}`] = subcmd; // eslint-disable-line no-param-reassign
+          }
+        });
+      }
     }
     return obj;
   }, {});
   restOfCat.commands = cmds;
   return restOfCat;
+};
+
+// Only considering flag before the first non-flag, ie before word without a dash
+const separateArgsIntoFlagsAndParams = (...args) => {
+  const flags = [];
+  let params;
+  for (let i = 0; i < args.length; i += 1) {
+    if (args[i].startsWith("-")) {
+      flags.push(args[i]);
+    } else {
+      // no more flags!
+      params = args.slice(i);
+      break;
+    }
+  }
+  return { flags, params };
 };
 
 const execute = (cmd, message, ...args) => {
@@ -59,14 +85,39 @@ const execute = (cmd, message, ...args) => {
   if (!command) {
     return Promise.reject(new Error("Unknown command"));
   }
-  const commandObject = allCommands[command];
+
+  let commandObject = allCommands[command];
+  let processedArgs = args;
+
   if (
     commandObject.level &&
     !permissionCheckers[commandObject.level](message.member)
   ) {
     return Promise.reject(new Error("Forbidden"));
   }
-  return allCommands[command].handler(message, ...args);
+
+  if (commandObject.subcommands) {
+    if (
+      !commandObject.handler &&
+      (!args[0] || !commandObject.subcommands[args[0]])
+    ) {
+      return Promise.reject(new Error("Unknown subcommand"));
+    }
+    if (args[0] && commandObject.subcommands[args[0]]) {
+      commandObject = commandObject.subcommands[args[0]];
+      processedArgs = args.slice(1);
+      // TODO repeated, ugly
+      if (
+        commandObject.level &&
+        !permissionCheckers[commandObject.level](message.member)
+      ) {
+        return Promise.reject(new Error("Forbidden"));
+      }
+    }
+  }
+
+  const { flags, params } = separateArgsIntoFlagsAndParams(processedArgs);
+  return allCommands[command].handler(message, flags, ...params);
 };
 
 module.exports = { execute };

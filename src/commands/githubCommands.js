@@ -1,4 +1,4 @@
-const githubHandlers = require("./githubHandlers");
+const githubHandlers = require("./handlers/githubHandlers");
 
 const CATEGORY_NAME = "GitHub";
 const CATEGORY_DESCRIPTION = "";

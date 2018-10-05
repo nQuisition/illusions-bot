@@ -1,11 +1,11 @@
-const config = require("../config");
-const utils = require("../utils/utils");
-const dbUtils = require("../utils/dbUtils");
-const scheduler = require("../scheduler");
-const apiUtils = require("../utils/apiUtils");
-const discordUtils = require("../utils/discordUtils");
-const logger = require("../utils/logger");
-const { getSpaces } = require("../utils/utils");
+const config = require("../../config");
+const utils = require("../../utils/utils");
+const dbUtils = require("../../utils/dbUtils");
+const scheduler = require("../../scheduler");
+const apiUtils = require("../../utils/apiUtils");
+const discordUtils = require("../../utils/discordUtils");
+const logger = require("../../utils/logger");
+const { getSpaces } = require("../../utils/utils");
 
 const numbersRegex = /(\d+)/;
 const intervalsMap = {
@@ -28,7 +28,7 @@ const computeDateFromNow = str => {
   }
 };
 
-const reminderScheduler = (message, ...args) => {
+const reminderScheduler = (message, flags, ...args) => {
   const startTime = computeDateFromNow(args[0]);
   if (!startTime) {
     return discordUtils.replyAndReject(message, "Incorrect time interval!");
